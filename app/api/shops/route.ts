@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
-import { Shop } from '@/types';
+import { NextResponse } from "next/server";
+import { Shop } from "@/types";
 
 class APIError extends Error {
   constructor(public status: number, message: string) {
     super(message);
-    this.name = 'APIError';
+    this.name = "APIError";
   }
 }
 
@@ -18,13 +18,13 @@ async function fetchHotpepperData(url: string): Promise<Shop[]> {
   }
   const data = await response.json();
   if (!data.results?.shop) {
-    throw new APIError(404, 'No shops found!!!!!!!!!!!!');
+    throw new APIError(404, "No shops found!!!!!!!!!!!!");
   }
   return data.results.shop;
 }
 
 function handleError(error: unknown): NextResponse {
-  console.error('Error:', error);
+  console.error("Error:", error);
   if (error instanceof APIError) {
     return NextResponse.json(
       { error: error.message },
@@ -32,7 +32,7 @@ function handleError(error: unknown): NextResponse {
     );
   }
   return NextResponse.json(
-    { error: 'An unexpected error occurred' },
+    { error: "An unexpected error occurred" },
     { status: 500 }
   );
 }
@@ -42,21 +42,21 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const key = process.env.HOTPEPPER_API_KEY;
     if (!key) {
-      throw new APIError(500, 'API key is not set');
+      throw new APIError(500, "API key is not set");
     }
 
     const query = new URLSearchParams({
       key,
-      format: 'json',
-      large_area: searchParams.get('large_area') || 'Z098',
+      format: "json",
+      large_area: searchParams.get("large_area") || "Z098",
     });
 
-    const keyword = searchParams.get('keyword');
-    if (keyword) query.set('keyword', keyword);
+    const keyword = searchParams.get("keyword");
+    if (keyword) query.set("keyword", keyword);
 
     const url = `https://webservice.recruit.co.jp/hotpepper/gourmet/v1/?${query.toString()}`;
     console.log(url);
-    console.log('🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣');
+    console.log("🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣🪣");
 
     const data = await fetchHotpepperData(url);
     return NextResponse.json(data);
